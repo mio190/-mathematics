@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teachable Machine Image Model - Tech Theme</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #0d0d0d;
+            color: #00ff99;
+        }
+
+        h1 {
+            color: #00ff99;
+            font-size: 2.5em;
+            text-shadow: 0 0 10px #00ff99, 0 0 20px #00ff99;
+        }
+
+        #webcam-container {
+            margin: 20px;
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px #00ff99, 0 0 30px #00ff99;
+        }
+
+        #label-container div {
+            margin-top: 10px;
+            font-size: 18px;
+            color: #00ff99;
+            font-weight: bold;
+        }
+
+        .prediction-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .class-name {
+            font-size: 18px;
+            color: #00ff99;
+        }
+
+        progress {
+            width: 200px;
+            height: 20px;
+            margin-top: 5px;
+            background-color: #333;
+            border-radius: 10px;
+        }
+
+        progress::-webkit-progress-value {
+            background-color: #00ff99;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #00ff99;
+            color: #0d0d0d;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 10px #00ff99, 0 0 20px #00ff99;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #009966;
+            box-shadow: 0 0 20px #00ff99, 0 0 40px #00ff99;
+        }
+
+        #loading {
+            font-size: 18px;
+            color: #00ff99;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px #00ff99, 0 0 20px #00ff99;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Tech Themed Image Model</h1>
+    <div id="loading">Loading model and webcam, please wait...</div>
+    <button type="button" onclick="init()">Start</button>
+    <div id="webcam-container"></div>
+    <div id="label-container"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+    <script type="text/javascript">
+        const URL = "https://teachablemachine.withgoogle.com/models/o159oHMtu/";
+
+        let model, webcam, labelContainer, maxPredictions;
+
+        // Load the image model and setup the webcam
+        async function init() {
+            document.getElementById("loading").style.display = "block"; // Show loading message
+            const modelURL = URL + "model.json";
+            const metadataURL = URL + "metadata.json";
+
+            // Load the model and metadata
+            model = await tmImage.load(modelURL, metadataURL);
+            maxPredictions = model.getTotalClasses();
+
+            // Setup webcam
+            const flip = true;
+            webcam = new tmImage.Webcam(200, 200, flip);
+            await webcam.setup();
+            await webcam.play();
+            window.requestAnimationFrame(loop);
+
+            // Append webcam to DOM
+            document.getElementById("webcam-container").appendChild(webcam.canvas);
+            labelContainer = document.getElementById("label-container");
+            for (let i = 0; i < maxPredictions; i++) {
+                const predictionWrapper = document.createElement("div");
+                predictionWrapper.classList.add("prediction-wrapper");
+
+                const className = document.createElement("div");
+                className.classList.add("class-name");
+                className.textContent = ""; // Placeholder for class name
+                predictionWrapper.appendChild(className);
+
+                const progressBar = document.createElement("progress");
+                progressBar.value = 0;
+                progressBar.max = 1;
+                predictionWrapper.appendChild(progressBar);
+
+                labelContainer.appendChild(predictionWrapper);
+            }
+
+            document.getElementById("loading").style.display = "none"; // Hide loading message
+        }
+
+        async function loop() {
+            webcam.update();
+            await predict();
+            window.requestAnimationFrame(loop);
+        }
+
+        // Run the webcam image through the image model
+        async function predict() {
+            const prediction = await model.predict(webcam.canvas);
+            for (let i = 0; i < maxPredictions; i++) {
+                const classPrediction = prediction[i].className + ": " + prediction[i].probability.toFixed(2);
+                const predictionWrapper = labelContainer.childNodes[i];
+                predictionWrapper.childNodes[0].textContent = prediction[i].className; // Update class name
+                predictionWrapper.childNodes[1].value = prediction[i].probability; // Update progress bar
+                predictionWrapper.childNodes[1].title = classPrediction; // Add hover text for more details
+            }
+        }
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>โปรแกรมคำนวณทางคณิตศาสตร์และฟิสิกส์</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #121212;
+            color: #fff;
+        }
+
+        .header {
+            background-color: rgba(0, 0, 0, 0.9);
+            text-align: center;
+            padding: 20px 0;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .calculator {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 25px rgba(0, 0, 0, 0.8);
+            max-width: 450px;
+            margin: 40px auto;
+            border: 2px solid #00ffcc;
+        }
+
+        h2 {
+            text-align: center;
+            color: #00ffcc;
+            margin-bottom: 20px;
+        }
+
+        h3 {
+            color: #00ccff;
+            margin-bottom: 10px;
+        }
+
+        select, input[type="number"], button {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #00ccff;
+            border-radius: 5px;
+            font-size: 16px;
+            background-color: #222;
+            color: #fff;
+            transition: border-color 0.3s;
+        }
+
+        select:focus, input[type="number"]:focus {
+            border-color: #00ffcc;
+            outline: none;
+        }
+
+        button {
+            background-color: #00ccff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+            padding: 12px;
+            font-size: 18px;
+        }
+
+        button:hover {
+            background-color: #00aaff;
+            transform: scale(1.05);
+        }
+
+        #result {
+            margin-top: 20px;
+            font-weight: bold;
+            text-align: center;
+            color: #29b6f6; /* สีของผลลัพธ์ */
+            padding: 20px;
+            border: 2px solid #29b6f6;
+            border-radius: 10px;
+            background-color: rgba(41, 182, 246, 0.1);
+            box-shadow: 0 4px 15px rgba(41, 182, 246, 0.2);
+        }
+
+        .footer {
+            background-color: #000;
+            text-align: center;
+            margin-top: 20px;
+            color: #ccc;
+            padding: 15px 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>โปรแกรมคำนวณทางคณิตศาสตร์และฟิสิกส์</h1>
+    <h3>ศตนนท์ พินทะปะกัง</h3>
+</div>
+
+<div class="calculator">
+    <h2>เลือกหมวดหมู่</h2>
+
+    <select id="category" onchange="toggleCategory()">
+        <option value="">เลือกหมวดหมู่</option>
+        <option value="math">คณิตศาสตร์</option>
+        <option value="physics">ฟิสิกส์</option>
+    </select>
+
+    <div id="sub-options"></div>
+    
+    <button onclick="calculate()">คำนวณ</button>
+    <p id="result"></p>
+</div>
+
+<div class="footer">
+    <p>&copy; 2024 ศตนนท์ พินทะปะกัง</p>
+</div>
+
+<script>
+    function toggleCategory() {
+        const category = document.getElementById('category').value;
+        const subOptionsDiv = document.getElementById('sub-options');
+        subOptionsDiv.innerHTML = ''; // Clear sub-options
+
+        if (category === 'math') {
+            subOptionsDiv.innerHTML = `
+                <select id="math-operation" onchange="showMathInputs()">
+                    <option value="">เลือกการคำนวณทางคณิตศาสตร์</option>
+                    <option value="add">บวก</option>
+                    <option value="subtract">ลบ</option>
+                    <option value="multiply">คูณ</option>
+                    <option value="divide">หาร</option>
+                    <option value="power">เลขยกกำลัง</option>
+                    <option value="rectangle">พื้นที่สี่เหลี่ยมผืนผ้า</option>
+                    <option value="square">พื้นที่สี่เหลี่ยมจตุรัส</option>
+                    <option value="circle">พื้นที่วงกลม</option>
+                </select>
+                <div id="math-inputs"></div>
+            `;
+        } else if (category === 'physics') {
+            subOptionsDiv.innerHTML = `
+                <select id="physics-operation" onchange="showPhysicsInputs()">
+                    <option value="">เลือกสูตรฟิสิกส์</option>
+                    <option value="speed">หาความเร็ว</option>
+                    <option value="acceleration">หาความเร่ง</option>
+                    <option value="mass">หามวล</option>
+                    <option value="motion">เคลื่อนที่แนวตรง</option>
+                </select>
+                <div id="physics-inputs"></div>
+            `;
+        }
+    }
+
+    function showMathInputs() {
+        const operation = document.getElementById('math-operation').value;
+        const inputsDiv = document.getElementById('math-inputs');
+        inputsDiv.innerHTML = '';
+
+        if (operation === 'add' || operation === 'subtract' || operation === 'multiply' || operation === 'divide' || operation === 'power') {
+            inputsDiv.innerHTML = `
+                <input type="number" id="num1" placeholder="ใส่ตัวเลขที่ 1" required>
+                <input type="number" id="num2" placeholder="ใส่ตัวเลขที่ 2" required>
+            `;
+        } else if (operation === 'rectangle' || operation === 'square') {
+            inputsDiv.innerHTML = `
+                <input type="number" id="side1" placeholder="ใส่ด้านที่ 1" required>
+                <input type="number" id="side2" placeholder="ใส่ด้านที่ 2" required>
+            `;
+        } else if (operation === 'circle') {
+            inputsDiv.innerHTML = `
+                <input type="number" id="radius" placeholder="ใส่รัศมี" required>
+            `;
+        }
+    }
+
+    function showPhysicsInputs() {
+        const operation = document.getElementById('physics-operation').value;
+        const inputsDiv = document.getElementById('physics-inputs');
+        inputsDiv.innerHTML = '';
+
+        if (operation === 'speed') {
+            inputsDiv.innerHTML = `
+                <input type="number" id="distance" placeholder="ใส่ระยะทาง (เมตร)" required>
+                <input type="number" id="time" placeholder="ใส่เวลา (วินาที)" required>
+            `;
+        } else if (operation === 'acceleration') {
+            inputsDiv.innerHTML = `
+                <input type="number" id="velocityChange" placeholder="ใส่การเปลี่ยนแปลงความเร็ว (m/s)" required>
+                <input type="number" id="time" placeholder="ใส่เวลา (วินาที)" required>
+            `;
+        } else if (operation === 'mass') {
+            inputsDiv.innerHTML = `
+                <input type="number" id="force" placeholder="ใส่แรง (N)" required>
+                <input type="number" id="acceleration" placeholder="ใส่ความเร่ง (m/s^2)" required>
+            `;
+        } else if (operation === 'motion') {
+            inputsDiv.innerHTML = `
+                <input type="number" id="initialVelocity" placeholder="ใส่ความเร็วต้น (m/s)" required>
+                <input type="number" id="time" placeholder="ใส่เวลา (วินาที)" required>
+                <input type="number" id="acceleration" placeholder="ใส่ความเร่ง (m/s^2)" required>
+            `;
+        }
+    }
+
+    function calculate() {
+        const category = document.getElementById('category').value;
+        let result;
+
+        if (category === 'math') {
+            const operation = document.getElementById('math-operation').value;
+
+            if (operation === 'add') {
+                const num1 = parseFloat(document.getElementById('num1').value);
+                const num2 = parseFloat(document.getElementById('num2').value);
+                result = num1 + num2;
+            } else if (operation === 'subtract') {
+                const num1 = parseFloat(document.getElementById('num1').value);
+                const num2 = parseFloat(document.getElementById('num2').value);
+                result = num1 - num2;
+            } else if (operation === 'multiply') {
+                const num1 = parseFloat(document.getElementById('num1').value);
+                const num2 = parseFloat(document.getElementById('num2').value);
+                result = num1 * num2;
+            } else if (operation === 'divide') {
+                const num1 = parseFloat(document.getElementById('num1').value);
+                const num2 = parseFloat(document.getElementById('num2').value);
+                result = num1 / num2;
+            } else if (operation === 'power') {
+                const num1 = parseFloat(document.getElementById('num1').value);
+                const num2 = parseFloat(document.getElementById('num2').value);
+                result = Math.pow(num1, num2);
+            } else if (operation === 'rectangle') {
+                const side1 = parseFloat(document.getElementById('side1').value);
+                const side2 = parseFloat(document.getElementById('side2').value);
+                result = side1 * side2;
+            } else if (operation === 'square') {
+                const side = parseFloat(document.getElementById('side1').value);
+                result = Math.pow(side, 2);
+            } else if (operation === 'circle') {
+                const radius = parseFloat(document.getElementById('radius').value);
+                result = Math.PI * Math.pow(radius, 2);
+            }
+        } else if (category === 'physics') {
+            const operation = document.getElementById('physics-operation').value;
+
+            if (operation === 'speed') {
+                const distance = parseFloat(document.getElementById('distance').value);
+                const time = parseFloat(document.getElementById('time').value);
+                result = distance / time;
+            } else if (operation === 'acceleration') {
+                const velocityChange = parseFloat(document.getElementById('velocityChange').value);
+                const time = parseFloat(document.getElementById('time').value);
+                result = velocityChange / time;
+            } else if (operation === 'mass') {
+                const force = parseFloat(document.getElementById('force').value);
+                const acceleration = parseFloat(document.getElementById('acceleration').value);
+                result = force / acceleration;
+            } else if (operation === 'motion') {
+                const initialVelocity = parseFloat(document.getElementById('initialVelocity').value);
+                const time = parseFloat(document.getElementById('time').value);
+                const acceleration = parseFloat(document.getElementById('acceleration').value);
+                result = initialVelocity + (acceleration * time);
+            }
+        }
+
+        // Show the result
+        document.getElementById('result').innerText = result !== undefined ? `ผลลัพธ์: ${result}` : 'กรุณาใส่ข้อมูลให้ครบถ้วน';
+    }
+</script>
+
+</body>
+</html>
