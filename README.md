@@ -1,9 +1,14 @@
 # วิธีดาวโหลด
- - กดเข้าไฟล์ คณิต.HTML
+ - กดเข้าไฟล์ คณิต.HTML(คำนวณคณิตศาสตรและฟิสิกส์) AI(โปรแกรมกล้องตรวจจับสิ่งของ)
  - กด จุด3จุดมุมขวา
  - กดดาวโหลด
-หรือดาวโหลดตามลิงค์นี่
+
+หรือดาวโหลดตามลิงค์นี่ 
+
+1 คำนวณคณิตศาสตรและฟิสิกส์
 https://drive.google.com/file/d/1egXkC2LqQG6vdiu-7vM4X4yBKWMk8DIN/view?usp=drive_link
+2 AI 
+https://drive.google.com/file/d/1bcRfOj482j5CloDPnqzTF-OI5ekrIj3x/view?usp=drive_link
 
 - มือถือ แต่จะแนะนำเปิดบนคอม
 ดาวโหลดเสร็จแล้วแนะนำให้เปิดที่google
